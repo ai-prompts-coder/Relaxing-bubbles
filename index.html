@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soothing Color Circles with Firecracker Burst and Ambient Bubbles</title>
+  <title>Soothing Color Circles with Firecracker Burst</title>
   <style>
     body {
       margin: 0;
@@ -20,7 +20,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   
   <script>
-    // Set up Scene, Camera, and Renderer.
+    // Set up Scene, Camera, and Renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
       75, window.innerWidth / window.innerHeight, 0.1, 1000
@@ -29,10 +29,9 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     
-    // Arrays to store main circles, burst particles, and ambient bubbles.
+    // Arrays to store main circles and burst particles.
     const circles = [];
     const burstCircles = [];
-    const bubbles = [];
     
     // Random color generator.
     function randomColor() {
@@ -56,7 +55,7 @@
       scene.add(circle);
     }
     
-    // Create multiple main circles.
+    // Create multiple main circles at once.
     function createMultipleCircles(num) {
       for (let i = 0; i < num; i++) {
         const randomSize = Math.random() * 0.3 + 0.1;
@@ -92,7 +91,8 @@
     
     // Create the burst effect by generating multiple smaller circles.
     function createBurst(position) {
-      const numBurstCircles = 20; // Reduced burst particles.
+      // Reduced number of burst particles for a less crowded effect.
+      const numBurstCircles = 20;
       for (let i = 0; i < numBurstCircles; i++) {
         const size = Math.random() * 0.05 + 0.02;
         const color = randomColor();
@@ -103,6 +103,7 @@
           (Math.random() - 0.5) * 1.5
         );
         const geometry = new THREE.CircleGeometry(size, 32);
+        // Use transparency for fading effect.
         const material = new THREE.MeshBasicMaterial({
           color: color,
           transparent: true,
@@ -122,7 +123,9 @@
     function animateBurst(burstCircle) {
       let growing = true;
       function update() {
+        // Update position based on its velocity.
         burstCircle.position.add(burstCircle.velocity);
+        
         if (growing) {
           burstCircle.scale.addScalar(0.02);
           if (burstCircle.scale.x >= 1) {
@@ -134,6 +137,7 @@
             0, burstCircle.material.opacity - 0.005
           );
         }
+        
         if (burstCircle.scale.x <= 0 || burstCircle.material.opacity <= 0) {
           scene.remove(burstCircle);
           const index = burstCircles.indexOf(burstCircle);
@@ -155,72 +159,14 @@
       });
     }
     
-    // ---------- AMBIENT BUBBLES SECTION ----------
-    
-    // Create an ambient bubble (a softly glowing, translucent circle).
-    function createBubble() {
-      // Choose a fixed gentle color (or use random pastel tones)
-      const color = new THREE.Color(0xAADDEE);
-      const radius = Math.random() * 0.2 + 0.1;
-      const geometry = new THREE.CircleGeometry(radius, 32);
-      // Use a low opacity for a soft, glowing effect.
-      const material = new THREE.MeshBasicMaterial({
-        color: color,
-        transparent: true,
-        opacity: 0.3
-      });
-      const bubble = new THREE.Mesh(geometry, material);
-      // Position bubbles in the lower half of the scene, spread out over X and Z.
-      bubble.position.set(
-        Math.random() * 10 - 5,
-        Math.random() * 2 - 4,  // starting a bit lower
-        Math.random() * 10 - 5
-      );
-      // Give a slight random drift velocity.
-      bubble.velocity = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.002,
-        Math.random() * 0.005 + 0.002, // upward motion
-        (Math.random() - 0.5) * 0.002
-      );
-      bubbles.push(bubble);
-      scene.add(bubble);
-    }
-    
-    // Create multiple bubbles.
-    function createBubbles(num) {
-      for (let i = 0; i < num; i++) {
-        createBubble();
-      }
-    }
-    
-    // Update bubbles: let them gently drift upward; reset if they move too high.
-    function updateBubbles() {
-      bubbles.forEach(bubble => {
-        bubble.position.add(bubble.velocity);
-        // If a bubble reaches too high (say, y > 5), reset it to a lower position.
-        if (bubble.position.y > 5) {
-          bubble.position.y = Math.random() * 2 - 4;
-          // Optionally, randomize x and z when resetting.
-          bubble.position.x = Math.random() * 10 - 5;
-          bubble.position.z = Math.random() * 10 - 5;
-        }
-      });
-    }
-    
-    // --------------------------------------------------
-    
     // Initialize the scene with a set of main circles.
     createMultipleCircles(30);
-    // Create ambient bubbles for a soothing backdrop.
-    createBubbles(10);
-    
     camera.position.z = 10;
     
-    // Main render loop.
+    // Main animation loop.
     function animate() {
       requestAnimationFrame(animate);
       updateCircles();
-      updateBubbles();
       renderer.render(scene, camera);
     }
     animate();
@@ -228,7 +174,7 @@
     // Continuously add new large circles so the scene remains populated.
     setInterval(() => {
       createMultipleCircles(3);
-    }, 4000);
+    }, 1500);
     
     // Handle window resizing.
     window.addEventListener('resize', () => {
